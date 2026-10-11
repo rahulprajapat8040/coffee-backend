@@ -1,4 +1,6 @@
 export const MODEL_NAME = {
-  DEVICE_INFO: 'DEVICE_INFO',
-  USER: 'USER',
+  DEVICE_INFO: 'DeviceInfo',
+  USER: 'User',
+  CATEGORY: 'Category',
+  COFFEE: 'Coffee',
 };
