@@ -6,6 +6,7 @@ import { CategoryDTO } from "./dto/category.dto.js";
 import { generatePagination, getPagination, responseSender } from "../../utils/helper/function.helper.js";
 import { RESPONSE_MESSAGE } from "../../utils/constant/response-message.constant.js";
 import { CommonQueryDTO } from "../../utils/dto/common-query.dto.js";
+import { CoffeeDTO } from "./dto/coffee.dto.js";
 
 @Injectable()
 export class ProductService {
@@ -38,4 +39,31 @@ export class ProductService {
       response,
     ); 
   }
+
+  async createCoffee(dto: CoffeeDTO){
+    const res = await this.coffeeModel.create(dto)
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_CREATED,
+      HttpStatus.CREATED,
+      true,
+      res,
+    );
+  }
+
+   async getAllCoffees(query: CommonQueryDTO){
+     const { page, limit, offset } = getPagination(query);
+     const res = await this.coffeeModel.findAndCountAll({
+       limit,
+       offset,
+       order: [['createdAt', 'DESC']],
+     });
+     const response = generatePagination(res, page, limit);
+     return responseSender(
+       RESPONSE_MESSAGE.DATA_FETCHED,
+       HttpStatus.OK,
+       true,
+       response,
+     );
+   }
+  
 }
