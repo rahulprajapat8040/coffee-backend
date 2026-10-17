@@ -7,6 +7,7 @@ import { generatePagination, getPagination, responseSender } from "../../utils/h
 import { RESPONSE_MESSAGE } from "../../utils/constant/response-message.constant.js";
 import { CommonQueryDTO } from "../../utils/dto/common-query.dto.js";
 import { CoffeeDTO } from "./dto/coffee.dto.js";
+import { CoffeeQueryDTO } from "./dto/product-query.dto.js";
 
 @Injectable()
 export class ProductService {
@@ -25,10 +26,11 @@ export class ProductService {
     );
   }
 
-  async getAllCategories(query: CommonQueryDTO){
+  async getAllCategories(query: CommonQueryDTO) {
     const { page, limit, offset } = getPagination(query);
     const res = await this.categoryModel.findAndCountAll({
-      limit, offset,
+      limit,
+      offset,
       order: [['createdAt', 'DESC']],
     });
     const response = generatePagination(res, page, limit);
@@ -37,11 +39,11 @@ export class ProductService {
       HttpStatus.OK,
       true,
       response,
-    ); 
+    );
   }
 
-  async createCoffee(dto: CoffeeDTO){
-    const res = await this.coffeeModel.create(dto)
+  async createCoffee(dto: CoffeeDTO) {
+    const res = await this.coffeeModel.create(dto);
     return responseSender(
       RESPONSE_MESSAGE.DATA_CREATED,
       HttpStatus.CREATED,
@@ -50,20 +52,22 @@ export class ProductService {
     );
   }
 
-   async getAllCoffees(query: CommonQueryDTO){
-     const { page, limit, offset } = getPagination(query);
-     const res = await this.coffeeModel.findAndCountAll({
-       limit,
-       offset,
-       order: [['createdAt', 'DESC']],
-     });
-     const response = generatePagination(res, page, limit);
-     return responseSender(
-       RESPONSE_MESSAGE.DATA_FETCHED,
-       HttpStatus.OK,
-       true,
-       response,
-     );
-   }
-  
+  async getAllCoffees(query: CoffeeQueryDTO) {
+    const { page, limit, offset } = getPagination(query);
+    const where = query.categoryId ? { categoryId: query.categoryId } : {};
+    const res = await this.coffeeModel.findAndCountAll({
+      include: [{ model: this.categoryModel, attributes: ['name'] }],
+      where,
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+    });
+    const response = generatePagination(res, page, limit);
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_FETCHED,
+      HttpStatus.OK,
+      true,
+      response,
+    );
+  }
 }

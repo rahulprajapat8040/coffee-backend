@@ -3,6 +3,7 @@ import { ProductService } from "./product.service.js";
 import { CategoryDTO } from "./dto/category.dto.js";
 import { CommonQueryDTO } from "../../utils/dto/common-query.dto.js";
 import { CoffeeDTO } from "./dto/coffee.dto.js";
+import { CoffeeQueryDTO } from "./dto/product-query.dto.js";
 
 @Controller('product')
 export class ProductController {
@@ -24,7 +25,7 @@ export class ProductController {
   }
 
   @Get('coffee')
-  getAllCoffees(@Query() query: CommonQueryDTO) {
+  getAllCoffees(@Query() query: CoffeeQueryDTO) {
     return this.productService.getAllCoffees(query);
   }
 }
