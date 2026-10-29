@@ -42,6 +42,26 @@ export class ProductService {
     );
   }
 
+  async updateCategory(id: string, dto: CategoryDTO) {
+    const res = await this.categoryModel.update(dto, { where: { id } });
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
+
+  async deleteCategory(id: string) {
+    const res = await this.categoryModel.destroy({ where: { id } });
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_DELETED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
+
   async createCoffee(dto: CoffeeDTO) {
     const res = await this.coffeeModel.create(dto);
     return responseSender(
@@ -68,6 +88,26 @@ export class ProductService {
       HttpStatus.OK,
       true,
       response,
+    );
+  }
+
+  async updateCoffee(id: string, dto: CoffeeDTO) {
+    const res = await this.coffeeModel.update(dto, { where: { id } });
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
+
+  async deleteCoffee(id: string) {
+    const res = await this.coffeeModel.destroy({ where: { id } });
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_DELETED,
+      HttpStatus.OK,
+      true,
+      res,
     );
   }
 }

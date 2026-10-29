@@ -3,4 +3,5 @@ export const MODEL_NAME = {
   USER: 'User',
   CATEGORY: 'Category',
   COFFEE: 'Coffee',
+  VARIANT: 'variant',
 };

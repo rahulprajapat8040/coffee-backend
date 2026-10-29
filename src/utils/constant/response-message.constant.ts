@@ -7,5 +7,7 @@ export const RESPONSE_MESSAGE = {
   LOGGED_IN: 'Logged in successfully.',
   DATA_CREATED: 'New data entry added successfully',
   DATA_FETCHED: 'Data fetched successfully',
+  DATA_UPDATED: 'Data updated successfully',
+  DATA_DELETED: 'Data deleted successfully',
   FILE_REMOVED: 'File removed from server',
 };

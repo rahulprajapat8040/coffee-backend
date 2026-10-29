@@ -1,9 +1,21 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
-import { ProductService } from "./product.service.js";
-import { CategoryDTO } from "./dto/category.dto.js";
-import { CommonQueryDTO } from "../../utils/dto/common-query.dto.js";
-import { CoffeeDTO } from "./dto/coffee.dto.js";
-import { CoffeeQueryDTO } from "./dto/product-query.dto.js";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
+import { ProductService } from './product.service.js';
+import { CategoryDTO } from './dto/category.dto.js';
+import { CommonQueryDTO } from '../../utils/dto/common-query.dto.js';
+import { CoffeeDTO } from './dto/coffee.dto.js';
+import { CoffeeQueryDTO } from './dto/product-query.dto.js';
+import { ApiParam } from '@nestjs/swagger';
 
 @Controller('product')
 export class ProductController {
@@ -17,6 +29,19 @@ export class ProductController {
   @Get('category')
   getAllCategories(@Query() query: CommonQueryDTO) {
     return this.productService.getAllCategories(query);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'category id', required: true })
+  @Put('category/:id')
+  updateCoffee(@Param('id') id: string, @Body() dto: CategoryDTO) {
+    return this.productService.updateCategory(id, dto);
+  }
+
+  @ApiParam({ name: 'id', description: 'category id', required: true })
+  @Delete('category/:id')
+  deleteCoffee(@Param('id') id: string) {
+    return this.productService.deleteCategory(id);
   }
 
   @Post('coffee')
