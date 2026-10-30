@@ -2,7 +2,7 @@ import { BelongsTo, Column, DataType, Default, ForeignKey, Model, PrimaryKey, Ta
 import { MODEL_NAME } from "../../../utils/constant/model-names.constant.js";
 import { VariantStatus } from "../../../utils/enums/enum.js";
 import { Coffee } from "./coffee.model.js";
-import { NonAttribute } from "sequelize";
+import type { NonAttribute } from 'sequelize';
 
 
 @Table({ tableName: MODEL_NAME.VARIANT, paranoid: true, timestamps: true })

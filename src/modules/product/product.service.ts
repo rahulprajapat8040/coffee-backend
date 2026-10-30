@@ -8,12 +8,14 @@ import { RESPONSE_MESSAGE } from "../../utils/constant/response-message.constant
 import { CommonQueryDTO } from "../../utils/dto/common-query.dto.js";
 import { CoffeeDTO } from "./dto/coffee.dto.js";
 import { CoffeeQueryDTO } from "./dto/product-query.dto.js";
+import { Variant } from "../database/models/variant.model.js";
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Category) private readonly categoryModel: typeof Category,
     @InjectModel(Coffee) private readonly coffeeModel: typeof Coffee,
+    @InjectModel(Variant) private readonly variantModel: typeof Variant,
   ) {}
 
   async createCategory(dto: CategoryDTO) {
@@ -63,7 +65,11 @@ export class ProductService {
   }
 
   async createCoffee(dto: CoffeeDTO) {
-    const res = await this.coffeeModel.create(dto);
+    const { variants, ...data } = dto;
+    const res = await this.coffeeModel.create(data);
+    await this.variantModel.bulkCreate(
+      variants.map((i) => ({ ...i, coffeeId: res.id })),
+    );
     return responseSender(
       RESPONSE_MESSAGE.DATA_CREATED,
       HttpStatus.CREATED,
@@ -92,7 +98,8 @@ export class ProductService {
   }
 
   async updateCoffee(id: string, dto: CoffeeDTO) {
-    const res = await this.coffeeModel.update(dto, { where: { id } });
+    const {variants, ...data} = dto
+    const res = await this.coffeeModel.update(data, { where: { id } });
     return responseSender(
       RESPONSE_MESSAGE.DATA_UPDATED,
       HttpStatus.OK,
