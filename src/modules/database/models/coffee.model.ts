@@ -20,6 +20,10 @@ export class Coffee extends Model<Coffee, Partial<Coffee>> {
   @Column(DataType.STRING)
   declare image: string;
 
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  declare isActive: boolean;
+
   @ForeignKey(() => Category)
   @Column(DataType.UUID)
   declare categoryId: string;

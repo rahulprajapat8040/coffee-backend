@@ -1,14 +1,22 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { Category } from "../database/models/category.model.js";
-import { Coffee } from "../database/models/coffee.model.js";
-import { CategoryDTO } from "./dto/category.dto.js";
-import { generatePagination, getPagination, responseSender } from "../../utils/helper/function.helper.js";
-import { RESPONSE_MESSAGE } from "../../utils/constant/response-message.constant.js";
-import { CommonQueryDTO } from "../../utils/dto/common-query.dto.js";
-import { CoffeeDTO } from "./dto/coffee.dto.js";
-import { CoffeeQueryDTO } from "./dto/product-query.dto.js";
-import { Variant } from "../database/models/variant.model.js";
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { Category } from '../database/models/category.model.js';
+import { Coffee } from '../database/models/coffee.model.js';
+import { CategoryDTO } from './dto/category.dto.js';
+import {
+  generatePagination,
+  getPagination,
+  responseSender,
+} from '../../utils/helper/function.helper.js';
+import { RESPONSE_MESSAGE } from '../../utils/constant/response-message.constant.js';
+import { CommonQueryDTO } from '../../utils/dto/common-query.dto.js';
+import {
+  CoffeeDTO,
+  CoffeeStatusUpdateDTO,
+  VariantStatusUpdateDTO,
+} from './dto/coffee.dto.js';
+import { CoffeeQueryDTO } from './dto/product-query.dto.js';
+import { Variant } from '../database/models/variant.model.js';
 
 @Injectable()
 export class ProductService {
@@ -82,11 +90,20 @@ export class ProductService {
     const { page, limit, offset } = getPagination(query);
     const where = query.categoryId ? { categoryId: query.categoryId } : {};
     const res = await this.coffeeModel.findAndCountAll({
-      include: [{ model: this.categoryModel, attributes: ['name'] }],
+      include: [
+        { model: this.categoryModel, attributes: ['name'] },
+        {
+          model: this.variantModel,
+          attributes: ['id', 'size', 'price', 'status'],
+        },
+      ],
       where,
       limit,
       offset,
-      order: [['createdAt', 'DESC']],
+      order: [
+        ['createdAt', 'DESC'],
+        [{ model: this.variantModel, as: 'variants' }, 'id', 'ASC'],
+      ],
     });
     const response = generatePagination(res, page, limit);
     return responseSender(
@@ -98,8 +115,21 @@ export class ProductService {
   }
 
   async updateCoffee(id: string, dto: CoffeeDTO) {
-    const {variants, ...data} = dto
+    const { variants, ...data } = dto;
     const res = await this.coffeeModel.update(data, { where: { id } });
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
+
+  async updateCoffeeStatus(id: string, dto: CoffeeStatusUpdateDTO) {
+    const res = await this.coffeeModel.update(
+      { isActive: dto.isActive },
+      { where: { id } },
+    );
     return responseSender(
       RESPONSE_MESSAGE.DATA_UPDATED,
       HttpStatus.OK,
@@ -112,6 +142,20 @@ export class ProductService {
     const res = await this.coffeeModel.destroy({ where: { id } });
     return responseSender(
       RESPONSE_MESSAGE.DATA_DELETED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
+
+  async changeVariantStatus(id: string, dto: VariantStatusUpdateDTO) {
+    const res = await this.variantModel.update(
+      { status: dto.status },
+      { where: { id } },
+    );
+
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
       HttpStatus.OK,
       true,
       res,

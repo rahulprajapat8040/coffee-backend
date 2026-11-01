@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -13,7 +14,11 @@ import {
 import { ProductService } from './product.service.js';
 import { CategoryDTO } from './dto/category.dto.js';
 import { CommonQueryDTO } from '../../utils/dto/common-query.dto.js';
-import { CoffeeDTO } from './dto/coffee.dto.js';
+import {
+  CoffeeDTO,
+  CoffeeStatusUpdateDTO,
+  VariantStatusUpdateDTO,
+} from './dto/coffee.dto.js';
 import { CoffeeQueryDTO } from './dto/product-query.dto.js';
 import { ApiParam } from '@nestjs/swagger';
 
@@ -52,5 +57,23 @@ export class ProductController {
   @Get('coffee')
   getAllCoffees(@Query() query: CoffeeQueryDTO) {
     return this.productService.getAllCoffees(query);
+  }
+
+  @ApiParam({ name: 'id', description: 'coffee id uuid' })
+  @Patch('coffee/:id/status')
+  updateCoffeeStatus(
+    @Param('id') id: string,
+    @Body() dto: CoffeeStatusUpdateDTO,
+  ) {
+    return this.productService.updateCoffeeStatus(id, dto);
+  }
+
+  @ApiParam({ name: 'id', description: 'variant id uuid' })
+  @Patch('coffee/variant/:id')
+  changeVariantStatus(
+    @Param('id') id: string,
+    @Body() dto: VariantStatusUpdateDTO,
+  ) {
+    return this.productService.changeVariantStatus(id, dto);
   }
 }

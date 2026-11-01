@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsDecimal, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsDecimal, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { VariantStatus } from "../../../utils/enums/enum.js";
 
 export class CoffeeVariantDTO {
   @ApiProperty({ example: 'M', description: 'Size or name of coffe' })
@@ -43,4 +44,25 @@ export class CoffeeDTO {
   @IsNotEmpty()
   @IsArray()
   variants: CoffeeVariantDTO[];
+}
+
+export class CoffeeStatusUpdateDTO {
+  @ApiProperty({
+    example: true,
+    description: 'status of the coffee',
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  isActive: boolean;
+}
+
+export class VariantStatusUpdateDTO {
+  @ApiProperty({
+    example: VariantStatus.UN_AVAILABLE,
+    description: 'status of the variant',
+    enum: VariantStatus,
+  })
+  @IsNotEmpty()
+  @IsEnum(VariantStatus)
+  status: VariantStatus;
 }
