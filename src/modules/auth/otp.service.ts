@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { RedisService } from '../redis/redis.service.js';
-import { otpGenerator } from '../../utils/helper/function.helper.js';
+import { otpGenerator } from '../../lib/utils/helper/function.helper.js';
 
 interface StoredOTP {
   hash: string;

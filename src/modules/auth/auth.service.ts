@@ -4,12 +4,12 @@ import { User } from '../database/models/user.model.js';
 import { DeviceInfo } from '../database/models/device-info.model.js';
 import { LoginDTO, OTPReqDTO, SignupDTO } from './dto/auth.dto.js';
 import { OTPService } from './otp.service.js';
-import { responseSender } from '../../utils/helper/function.helper.js';
-import { RESPONSE_MESSAGE } from '../../utils/constant/response-message.constant.js';
+import { responseSender } from '../../lib/utils/helper/function.helper.js';
+import { RESPONSE_MESSAGE } from '../../lib/utils/constant/response-message.constant.js';
 import { Sequelize } from 'sequelize-typescript';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { DeviceType } from '../../utils/enums/enum.js';
+import { DeviceType } from '../../lib/utils/enums/enum.js';
 import { Transaction } from 'sequelize';
 
 @Injectable()

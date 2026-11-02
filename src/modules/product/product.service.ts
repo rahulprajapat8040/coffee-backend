@@ -7,9 +7,9 @@ import {
   generatePagination,
   getPagination,
   responseSender,
-} from '../../utils/helper/function.helper.js';
-import { RESPONSE_MESSAGE } from '../../utils/constant/response-message.constant.js';
-import { CommonQueryDTO } from '../../utils/dto/common-query.dto.js';
+} from '../../lib/utils/helper/function.helper.js';
+import { RESPONSE_MESSAGE } from '../../lib/utils/constant/response-message.constant.js';
+import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
 import {
   CoffeeDTO,
   CoffeeStatusUpdateDTO,
@@ -97,6 +97,7 @@ export class ProductService {
           attributes: ['id', 'size', 'price', 'status'],
         },
       ],
+      distinct: true,
       where,
       limit,
       offset,

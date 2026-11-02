@@ -4,7 +4,7 @@ import {
   IntersectionType,
 } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { DeviceType } from '../../../utils/enums/enum.js';
+import { DeviceType } from '../../../lib/utils/enums/enum.js';
 
 export class DeviceDTO {
   @ApiProperty({ example: '232-daa-device', description: 'Device id' })

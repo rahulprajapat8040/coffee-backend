@@ -4,4 +4,7 @@ export const MODEL_NAME = {
   CATEGORY: 'Category',
   COFFEE: 'Coffee',
   VARIANT: 'variant',
+  CART: 'Cart',
+  WISH_LIST: 'WishList',
+  ORDER: 'Order',
 };

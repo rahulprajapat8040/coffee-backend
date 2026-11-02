@@ -1,5 +1,5 @@
 import { Column, DataType, Default, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { MODEL_NAME } from "../../../utils/constant/model-names.constant.js";
+import { MODEL_NAME } from "../../../lib/utils/constant/model-names.constant.js";
 import { Coffee } from "./coffee.model.js";
 
 @Table({ tableName: MODEL_NAME.CATEGORY, paranoid: true, timestamps: true })

@@ -8,8 +8,10 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { MODEL_NAME } from '../../../utils/constant/model-names.constant.js';
+import { MODEL_NAME } from '../../../lib/utils/constant/model-names.constant.js';
 import { DeviceInfo } from './device-info.model.js';
+import { Cart } from './cart.model.js';
+import { Role } from '../../../lib/utils/enums/enum.js';
 
 @Table({ tableName: MODEL_NAME.USER, paranoid: true, timestamps: true })
 export class User extends Model<User, Partial<User>> {
@@ -39,8 +41,14 @@ export class User extends Model<User, Partial<User>> {
   @Column({ type: DataType.INTEGER })
   declare userIdx: number;
 
+  @Column({ type: DataType.ENUM(...Object.values(Role)) })
+  declare role: Role;
+
   @HasMany(() => DeviceInfo)
   declare devices: DeviceInfo[];
+
+  @HasMany(() => Cart)
+  declare cart: Cart[];
 
   @BeforeCreate
   static async setindex(instance: User) {

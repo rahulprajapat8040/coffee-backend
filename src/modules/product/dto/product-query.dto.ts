@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { CommonQueryDTO } from "../../../utils/dto/common-query.dto.js";
+import { CommonQueryDTO } from "../../../lib/utils/dto/common-query.dto.js";
 import { IsOptional } from "class-validator";
 
 export class CoffeeQueryDTO extends CommonQueryDTO {

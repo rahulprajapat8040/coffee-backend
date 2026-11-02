@@ -19,7 +19,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service.js';
 import { multerConfig } from '../../multer.config.js';
-import { responseSender } from '../../utils/helper/function.helper.js';
+import { responseSender } from '../../lib/utils/helper/function.helper.js';
 
 @ApiTags('File And Media Management APIs')
 @Controller('files')

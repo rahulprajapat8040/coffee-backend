@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service.js';
 import { CategoryDTO } from './dto/category.dto.js';
-import { CommonQueryDTO } from '../../utils/dto/common-query.dto.js';
+import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
 import {
   CoffeeDTO,
   CoffeeStatusUpdateDTO,

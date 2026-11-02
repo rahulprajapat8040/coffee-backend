@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import { responseSender } from '../../utils/helper/function.helper.js';
-import { RESPONSE_MESSAGE } from '../../utils/constant/response-message.constant.js';
+import { responseSender } from '../../lib/utils/helper/function.helper.js';
+import { RESPONSE_MESSAGE } from '../../lib/utils/constant/response-message.constant.js';
 
 @Injectable()
 export class FileService {

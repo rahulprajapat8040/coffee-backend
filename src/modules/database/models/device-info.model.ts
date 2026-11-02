@@ -9,8 +9,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 import type { NonAttribute } from 'sequelize';
-import { MODEL_NAME } from '../../../utils/constant/model-names.constant.js';
-import { DeviceType } from '../../../utils/enums/enum.js';
+import { MODEL_NAME } from '../../../lib/utils/constant/model-names.constant.js';
+import { DeviceType } from '../../../lib/utils/enums/enum.js';
 import { User } from './user.model.js';
 
 @Table({
