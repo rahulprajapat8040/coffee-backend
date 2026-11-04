@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/sequelize';
 import { Cart, Coffee, Variant } from '../../database/models/index.js';
-import { CartDTO } from '../dto/cart.dto.js';
+import { CartDTO, QuantityDTO } from '../dto/cart.dto.js';
 import {
   BadRequestException,
   HttpStatus,
@@ -15,6 +15,7 @@ import {
 } from '../../../lib/utils/helper/function.helper.js';
 import { RESPONSE_MESSAGE } from '../../../lib/utils/constant/response-message.constant.js';
 import { CommonQueryDTO } from '../../../lib/utils/dto/common-query.dto.js';
+import { Op } from 'sequelize';
 
 export class CartService {
   constructor(
@@ -50,7 +51,36 @@ export class CartService {
     );
   }
 
-  async updateQuantity(user: IAuthUser) {}
+  async updateQuantity(user: IAuthUser, cartItemId: string, dto: QuantityDTO) {
+    const by = dto.type === 'asc' ? dto.quantity : -dto.quantity;
+    const where: any = {
+      id: cartItemId,
+      userId: user.id,
+    };
+
+    if (dto.type === 'desc') {
+      where.quantity = {
+        [Op.gte]: dto.quantity + 1,
+      };
+    }
+
+    const res = await this.cartModel.increment('quantity', {
+      by,
+      where,
+    });
+
+    return responseSender(RESPONSE_MESSAGE.DATA_UPDATED, HttpStatus.OK, true, res);
+  }
+
+  async deleteCartItem(id: string){
+    const res = await this.cartModel.destroy({ where: { id } });
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_DELETED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
 
   async getMyCartItems(user: IAuthUser, query: CommonQueryDTO) {
     const { page, limit, offset } = getPagination(query);

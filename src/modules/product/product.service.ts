@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Category } from '../database/models/category.model.js';
 import { Coffee } from '../database/models/coffee.model.js';
@@ -112,6 +112,30 @@ export class ProductService {
       HttpStatus.OK,
       true,
       response,
+    );
+  }
+
+  async getCoffeeDetail(id: string) {
+    const res = await this.coffeeModel.findByPk(id, {
+      attributes: ['id', 'image', 'name', 'description'],
+      include: [
+        {
+          model: this.variantModel,
+          attributes: ['id', 'size', 'price', 'status'],
+        },
+      ],
+      order: [[{ model: this.variantModel, as: 'variants' }, 'price', 'ASC']],
+    });
+
+    if (!res) {
+      throw new NotFoundException(RESPONSE_MESSAGE.DATA_NOT_FOUND);
+    }
+
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_FETCHED,
+      HttpStatus.OK,
+      true,
+      res,
     );
   }
 

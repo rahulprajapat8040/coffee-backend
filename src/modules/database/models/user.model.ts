@@ -12,6 +12,7 @@ import { MODEL_NAME } from '../../../lib/utils/constant/model-names.constant.js'
 import { DeviceInfo } from './device-info.model.js';
 import { Cart } from './cart.model.js';
 import { Role } from '../../../lib/utils/enums/enum.js';
+import { Address } from './address.model.js';
 
 @Table({ tableName: MODEL_NAME.USER, paranoid: true, timestamps: true })
 export class User extends Model<User, Partial<User>> {
@@ -49,6 +50,9 @@ export class User extends Model<User, Partial<User>> {
 
   @HasMany(() => Cart)
   declare cart: Cart[];
+
+  @HasMany(() => Address)
+  declare addresses: Address[];
 
   @BeforeCreate
   static async setindex(instance: User) {

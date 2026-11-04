@@ -59,6 +59,12 @@ export class ProductController {
     return this.productService.getAllCoffees(query);
   }
 
+  @ApiParam({ name: 'id', description: 'coffee id' })
+  @Get('coffee/info/:id')
+  getCoffeeDetail(@Param('id') id: string) {
+    return this.productService.getCoffeeDetail(id);
+  }
+
   @ApiParam({ name: 'id', description: 'coffee id uuid' })
   @Patch('coffee/:id/status')
   updateCoffeeStatus(
