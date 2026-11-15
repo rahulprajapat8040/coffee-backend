@@ -1,4 +1,10 @@
-import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../database/models/user.model.js';
 import { DeviceInfo } from '../database/models/device-info.model.js';
@@ -11,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { DeviceType } from '../../lib/utils/enums/enum.js';
 import { Transaction } from 'sequelize';
+import { IAuthUser } from '../../lib/interfaces/auth.interface.js';
 
 @Injectable()
 export class AuthService {
@@ -23,31 +30,24 @@ export class AuthService {
   ) {}
 
   async sendOTP(dto: OTPReqDTO) {
+    console.log('ddd', dto);
     const { email } = dto;
     const otp = await this.otpService.generateAuthOTP(email);
     return responseSender(RESPONSE_MESSAGE.OTP_SENT, HttpStatus.OK, true, otp);
   }
 
   async signup(dto: SignupDTO) {
-    const {
-      deviceId,
-      deviceToken,
-      deviceType,
-      email,
-      otp,
-      firstName,
-      lastName,
-    } = dto;
+    const { deviceId, deviceToken, deviceType, email, otp, name } = dto;
 
     const user = await this.getUserByEmail(email);
-    if(user){
+    if (user) {
       throw new BadRequestException(RESPONSE_MESSAGE.ACCOUNT_EXIST);
     }
-    
+
     await this.otpService.verifyAuthOTP(email, otp);
     const res = await this.sequelize.transaction(async (tx) => {
       const user = await this.userModel.create(
-        { firstName, lastName, email },
+        { name, email },
         { transaction: tx },
       );
       const { accessToken, refreshToken } = await this.upsertDeviceInfo(
@@ -68,32 +68,53 @@ export class AuthService {
     );
   }
 
-  async login(dto: LoginDTO){
-      const { deviceId, deviceToken, deviceType, email, otp } = dto;
-      const user = await this.getUserByEmail(email);
-      
-      if(!user){
-        throw new NotFoundException(RESPONSE_MESSAGE.ACCOUNT_NOT_FOUND);
-      }
-      
-      await this.otpService.verifyAuthOTP(email, otp);
-      const res = await this.sequelize.transaction(async(tx)=> {
-        const { accessToken, refreshToken } = await this.upsertDeviceInfo(
-          tx,
-          deviceId,
-          user.id,
-          deviceType,
-          otp,
-          deviceToken,
-        );
-        return { accessToken, refreshToken };
-      })
-      return responseSender(
-        RESPONSE_MESSAGE.LOGGED_IN,
-        HttpStatus.OK,
-        true,
-        res,
+  async login(dto: LoginDTO) {
+    const { deviceId, deviceToken, deviceType, email, otp } = dto;
+    const user = await this.getUserByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(RESPONSE_MESSAGE.ACCOUNT_NOT_FOUND);
+    }
+
+    await this.otpService.verifyAuthOTP(email, otp);
+
+    const res = await this.sequelize.transaction(async (tx) => {
+      const { accessToken, refreshToken } = await this.upsertDeviceInfo(
+        tx,
+        deviceId,
+        user.id,
+        deviceType,
+        otp,
+        deviceToken,
       );
+      return { accessToken, refreshToken };
+    });
+
+    return responseSender(RESPONSE_MESSAGE.LOGGED_IN, HttpStatus.OK, true, res);
+  }
+
+  async getUser(user: IAuthUser) {
+    console.log('user', user);
+    const res = await this.userModel.findByPk(user.id, {
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'countryCode',
+        'phoneNo',
+        'profilePic',
+        'role',
+      ],
+    });
+    if (!res) {
+      throw new ForbiddenException(RESPONSE_MESSAGE.ACCOUNT_NOT_FOUND);
+    }
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_FETCHED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
   }
 
   private async upsertDeviceInfo(
@@ -109,21 +130,21 @@ export class AuthService {
       userId,
     );
     const refreshHash = await argon.hash(refreshToken);
-     await this.deviceModel.upsert(
-       {
-         deviceId,
-         userId,
-         refreshHash,
-         deviceType,
-         deviceToken,
-         otp,
-       },
-       { transaction },
-     );
+    await this.deviceModel.upsert(
+      {
+        deviceId,
+        userId,
+        refreshHash,
+        deviceType,
+        deviceToken,
+        otp,
+      },
+      { transaction },
+    );
     return { accessToken, refreshToken };
   }
 
-  private async getUserByEmail(email: string){
+  private async getUserByEmail(email: string) {
     const res = await this.userModel.findOne({ where: { email } });
     return res;
   }

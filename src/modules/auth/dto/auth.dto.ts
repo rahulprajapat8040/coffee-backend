@@ -40,12 +40,7 @@ export class SignupDTO extends IntersectionType(DeviceDTO, OTPReqDTO) {
   @ApiProperty({ example: 'Rahul', description: 'first name of user' })
   @IsNotEmpty()
   @IsString()
-  firstName: string;
-
-  @ApiProperty({ example: 'prajapat', description: 'last name of the user' })
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
+  name: string;
 
   @ApiProperty({ example: '123456', description: 'OTP' })
   @IsNotEmpty()

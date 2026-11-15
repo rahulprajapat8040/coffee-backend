@@ -22,10 +22,7 @@ export class User extends Model<User, Partial<User>> {
   declare id: string;
 
   @Column(DataType.STRING)
-  declare firstName: string;
-
-  @Column(DataType.STRING)
-  declare lastName: string;
+  declare name: string;
 
   @Column(DataType.STRING)
   declare email: string;
