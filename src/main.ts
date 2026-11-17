@@ -31,6 +31,10 @@ async function bootstrap() {
     .setTitle('Coffee App')
     .setDescription('Swagger documentation for coffee apis')
     .setVersion('1.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'jwt' },
+      'access-token',
+    )
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);

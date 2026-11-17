@@ -1,7 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsLatitude, IsLongitude, IsNotEmpty, IsString } from "class-validator";
+import { IsLatitude, IsLongitude, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class AddressDTO {
+  @ApiProperty({ example: 'Own Home', description: 'a nick name for address' })
+  @IsOptional()
+  nickName: string;
+
   @ApiProperty({
     example: 'home address location 123',
     description: 'user address',
