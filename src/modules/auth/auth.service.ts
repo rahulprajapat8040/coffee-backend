@@ -94,7 +94,6 @@ export class AuthService {
   }
 
   async getUser(user: IAuthUser) {
-    console.log('user', user);
     const res = await this.userModel.findByPk(user.id, {
       attributes: [
         'id',
