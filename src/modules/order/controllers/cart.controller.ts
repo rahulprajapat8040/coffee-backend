@@ -45,10 +45,7 @@ export class CartController {
   }
 
   @Get('my')
-  getMyCartItems(
-    @CurrentUser() user: IAuthUser,
-    @Query() query: CommonQueryDTO,
-  ) {
-    return this.cartService.getMyCartItems(user, query);
+  getMyCartItems(@CurrentUser() user: IAuthUser) {
+    return this.cartService.getMyCartItems(user);
   }
 }

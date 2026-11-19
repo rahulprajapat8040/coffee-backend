@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -46,5 +47,12 @@ export class UsersController {
   @Put('address/:id')
   updateAddress(@Param('id') id: string, @Body() dto: AddressDTO) {
     return this.userService.updateAddress(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', description: 'Address id' })
+  @Patch('address/:id')
+  markAddressDefault(@Param('id') id: string, @CurrentUser() user: IAuthUser) {
+    return this.userService.markAddressDefault(user, id);
   }
 }

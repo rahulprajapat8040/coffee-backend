@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Category } from '../database/models/category.model.js';
 import {
@@ -12,6 +12,7 @@ import { User } from '../database/models/user.model.js';
 import { IAuthUser } from '../../lib/interfaces/auth.interface.js';
 import { AddressDTO } from './dto/user.dto.js';
 import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
+import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +20,7 @@ export class UsersService {
     @InjectModel(User) private readonly userModel: typeof User,
     @InjectModel(Category) private readonly categoryModel: typeof Category,
     @InjectModel(Address) private readonly addressModel: typeof Address,
+    private readonly sequelize: Sequelize,
   ) {}
 
   async getHomeData() {
@@ -87,6 +89,44 @@ export class UsersService {
       },
       { where: { id } },
     );
+
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
+  }
+
+  async markAddressDefault(user: IAuthUser, id: string) {
+    const res = await this.sequelize.transaction(async (tx) => {
+      // unset all default addresses of this user
+      await this.addressModel.update(
+        { isDefault: false },
+        {
+          where: { userId: user.id },
+          transaction: tx,
+        },
+      );
+
+      // set the address as default
+      const [updatedCount] = await this.addressModel.update(
+        { isDefault: true },
+        {
+          where: {
+            id,
+            userId: user.id,
+          },
+          transaction: tx,
+        },
+      );
+
+      if (updatedCount === 0) {
+        throw new NotFoundException('Address not found');
+      }
+
+      return true;
+    });
 
     return responseSender(
       RESPONSE_MESSAGE.DATA_UPDATED,

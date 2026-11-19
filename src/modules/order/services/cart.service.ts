@@ -69,10 +69,15 @@ export class CartService {
       where,
     });
 
-    return responseSender(RESPONSE_MESSAGE.DATA_UPDATED, HttpStatus.OK, true, res);
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
+      HttpStatus.OK,
+      true,
+      res,
+    );
   }
 
-  async deleteCartItem(id: string){
+  async deleteCartItem(id: string) {
     const res = await this.cartModel.destroy({ where: { id } });
     return responseSender(
       RESPONSE_MESSAGE.DATA_DELETED,
@@ -82,23 +87,12 @@ export class CartService {
     );
   }
 
-  async getMyCartItems(user: IAuthUser, query: CommonQueryDTO) {
-    const { page, limit, offset } = getPagination(query);
-
-    const carts = await this.cartModel.findAndCountAll({
+  async getMyCartItems(user: IAuthUser) {
+    const carts = await this.cartModel.findAll({
       where: { userId: user.id },
-      limit,
-      offset,
     });
 
-    const res = generatePagination(carts, page, limit);
-
-    return responseSender(
-      RESPONSE_MESSAGE.DATA_FETCHED,
-      HttpStatus.OK,
-      true,
-      res,
-    );
+    return responseSender(RESPONSE_MESSAGE.DATA_FETCHED, HttpStatus.OK, true, carts);
   }
 
   private async validateItem(coffeeId: string, variantId: string) {
