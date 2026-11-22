@@ -4,19 +4,15 @@ import { CartDTO, QuantityDTO } from '../dto/cart.dto.js';
 import {
   BadRequestException,
   HttpStatus,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CurrentUser } from '../../../config/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../lib/interfaces/auth.interface.js';
-import {
-  generatePagination,
-  getPagination,
-  responseSender,
-} from '../../../lib/utils/helper/function.helper.js';
+import { responseSender } from '../../../lib/utils/helper/function.helper.js';
 import { RESPONSE_MESSAGE } from '../../../lib/utils/constant/response-message.constant.js';
-import { CommonQueryDTO } from '../../../lib/utils/dto/common-query.dto.js';
-import { Op } from 'sequelize';
+import { VariantStatus } from '../../../lib/utils/enums/enum.js';
 
+@Injectable()
 export class CartService {
   constructor(
     @InjectModel(Cart) private readonly cartModel: typeof Cart,
@@ -24,7 +20,7 @@ export class CartService {
     @InjectModel(Variant) private readonly variantModel: typeof Variant,
   ) {}
 
-  async addToCart(@CurrentUser() user: IAuthUser, dto: CartDTO) {
+  async addToCart(user: IAuthUser, dto: CartDTO) {
     const { coffeeId, variantId, quantity } = dto;
     await this.validateItem(coffeeId, variantId);
 
@@ -52,33 +48,32 @@ export class CartService {
   }
 
   async updateQuantity(user: IAuthUser, cartItemId: string, dto: QuantityDTO) {
-    const by = dto.type === 'asc' ? dto.quantity : -dto.quantity;
-    const where: any = {
-      id: cartItemId,
-      userId: user.id,
-    };
-
-    if (dto.type === 'desc') {
-      where.quantity = {
-        [Op.gte]: dto.quantity + 1,
-      };
+    const cart = await this.cartModel.findOne({
+      where: { id: cartItemId, userId: user.id },
+    });
+    if (!cart) {
+      throw new NotFoundException('Cart item not found');
     }
 
-    const res = await this.cartModel.increment('quantity', {
-      by,
-      where,
-    });
+    const quantity =
+      cart.quantity + (dto.type === 'asc' ? dto.quantity : -dto.quantity);
+    if (quantity < 1) {
+      throw new BadRequestException('Cart quantity must be at least one');
+    }
+    await cart.update({ quantity });
 
     return responseSender(
       RESPONSE_MESSAGE.DATA_UPDATED,
       HttpStatus.OK,
       true,
-      res,
+      cart,
     );
   }
 
-  async deleteCartItem(id: string) {
-    const res = await this.cartModel.destroy({ where: { id } });
+  async deleteCartItem(user: IAuthUser, id: string) {
+    const res = await this.cartModel.destroy({
+      where: { id, userId: user.id },
+    });
     return responseSender(
       RESPONSE_MESSAGE.DATA_DELETED,
       HttpStatus.OK,
@@ -90,14 +85,30 @@ export class CartService {
   async getMyCartItems(user: IAuthUser) {
     const carts = await this.cartModel.findAll({
       where: { userId: user.id },
+      include: [
+        {
+          model: this.coffeeModel,
+          attributes: ['id', 'name', 'image', 'isActive'],
+        },
+        {
+          model: this.variantModel,
+          attributes: ['id', 'size', 'price', 'status', 'coffeeId'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
     });
 
-    return responseSender(RESPONSE_MESSAGE.DATA_FETCHED, HttpStatus.OK, true, carts);
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_FETCHED,
+      HttpStatus.OK,
+      true,
+      carts,
+    );
   }
 
   private async validateItem(coffeeId: string, variantId: string) {
     const variant = await this.variantModel.findByPk(variantId, {
-      attributes: ['id', 'coffeeId'],
+      attributes: ['id', 'coffeeId', 'status'],
     });
     if (!variant) {
       throw new NotFoundException('This variant does not exist. Please check!');
@@ -106,6 +117,17 @@ export class CartService {
       throw new BadRequestException(
         'This variant is related to another coffee. Please check!',
       );
+    }
+
+    if (variant.status !== VariantStatus.AVAILABLE) {
+      throw new BadRequestException('This size is currently unavailable');
+    }
+
+    const coffee = await this.coffeeModel.findByPk(coffeeId, {
+      attributes: ['id', 'isActive'],
+    });
+    if (!coffee || !coffee.isActive) {
+      throw new BadRequestException('This coffee is currently unavailable');
     }
   }
 }

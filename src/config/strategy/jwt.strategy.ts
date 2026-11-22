@@ -30,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: IJwtPayload): Promise<IAuthUser> {
     const user = await this.user.findByPk(payload.userId, {
-      attributes: ['id'],
+      attributes: ['id', 'role'],
     });
 
     if (!user) {
@@ -42,6 +42,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     return {
       id: user.id,
       deviceId: payload.deviceId,
+      role: user.role,
     };
   }
 }

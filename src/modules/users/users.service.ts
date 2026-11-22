@@ -10,7 +10,7 @@ import { RESPONSE_MESSAGE } from '../../lib/utils/constant/response-message.cons
 import { Address } from '../database/models/address.model.js';
 import { User } from '../database/models/user.model.js';
 import { IAuthUser } from '../../lib/interfaces/auth.interface.js';
-import { AddressDTO } from './dto/user.dto.js';
+import { AddressDTO, UpdateProfileDTO } from './dto/user.dto.js';
 import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
 import { Sequelize } from 'sequelize-typescript';
 
@@ -31,6 +31,43 @@ export class UsersService {
     return responseSender(RESPONSE_MESSAGE.DATA_FETCHED, HttpStatus.OK, true, {
       categories,
     });
+  }
+
+  async getMyProfile(user: IAuthUser) {
+    const profile = await this.userModel.findByPk(user.id, {
+      attributes: [
+        'id',
+        'name',
+        'email',
+        'countryCode',
+        'phoneNo',
+        'profilePic',
+        'role',
+      ],
+    });
+    if (!profile) {
+      throw new NotFoundException(RESPONSE_MESSAGE.ACCOUNT_NOT_FOUND);
+    }
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_FETCHED,
+      HttpStatus.OK,
+      true,
+      profile,
+    );
+  }
+
+  async updateMyProfile(user: IAuthUser, dto: UpdateProfileDTO) {
+    const profile = await this.userModel.findByPk(user.id);
+    if (!profile) {
+      throw new NotFoundException(RESPONSE_MESSAGE.ACCOUNT_NOT_FOUND);
+    }
+    await profile.update(dto);
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_UPDATED,
+      HttpStatus.OK,
+      true,
+      profile,
+    );
   }
 
   async saveAddress(user: IAuthUser, dto: AddressDTO) {

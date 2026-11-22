@@ -12,7 +12,7 @@ import {
 import { UsersService } from './users.service.js';
 import { CurrentUser } from '../../config/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../lib/interfaces/auth.interface.js';
-import { AddressDTO } from './dto/user.dto.js';
+import { AddressDTO, UpdateProfileDTO } from './dto/user.dto.js';
 import { JwtAuthGuard } from '../../config/guards/jwt-auth.guard.js';
 import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
@@ -21,6 +21,21 @@ import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getMyProfile(@CurrentUser() user: IAuthUser) {
+    return this.userService.getMyProfile(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  updateMyProfile(
+    @CurrentUser() user: IAuthUser,
+    @Body() dto: UpdateProfileDTO,
+  ) {
+    return this.userService.updateMyProfile(user, dto);
+  }
 
   @Get('home')
   getHomeData() {

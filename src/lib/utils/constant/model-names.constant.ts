@@ -8,4 +8,5 @@ export const MODEL_NAME = {
   CART: 'Cart',
   WISH_LIST: 'WishList',
   ORDER: 'Order',
+  ORDER_ITEM: 'OrderItem',
 };

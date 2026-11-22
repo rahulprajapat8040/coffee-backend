@@ -1,6 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsString, IsUUID, Min } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
 
 export class CartDTO {
   @ApiProperty({ example: 'coffee-id uuid', description: 'coffee id' })
@@ -32,5 +39,6 @@ export class QuantityDTO {
   @ApiProperty({ example: 'asc', description: 'type of the increment' })
   @IsNotEmpty()
   @IsString()
+  @IsIn(['asc', 'desc'])
   type: 'asc' | 'desc';
 }

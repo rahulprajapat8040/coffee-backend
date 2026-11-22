@@ -88,7 +88,9 @@ export class ProductService {
 
   async getAllCoffees(query: CoffeeQueryDTO) {
     const { page, limit, offset } = getPagination(query);
-    const where = query.categoryId ? { categoryId: query.categoryId } : {};
+    const where = query.categoryId
+      ? { categoryId: query.categoryId, isActive: true }
+      : { isActive: true };
     const res = await this.coffeeModel.findAndCountAll({
       include: [
         { model: this.categoryModel, attributes: ['name'] },
@@ -116,7 +118,8 @@ export class ProductService {
   }
 
   async getCoffeeDetail(id: string) {
-    const res = await this.coffeeModel.findByPk(id, {
+    const res = await this.coffeeModel.findOne({
+      where: { id, isActive: true },
       attributes: ['id', 'image', 'name', 'description'],
       include: [
         {

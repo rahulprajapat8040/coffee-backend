@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
@@ -15,7 +14,6 @@ import { JwtAuthGuard } from '../../../config/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../config/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../lib/interfaces/auth.interface.js';
 import { CartDTO, QuantityDTO } from '../dto/cart.dto.js';
-import { CommonQueryDTO } from '../../../lib/utils/dto/common-query.dto.js';
 
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
@@ -40,8 +38,8 @@ export class CartController {
 
   @ApiParam({ name: 'id', description: 'id of the item' })
   @Delete(':id')
-  deleteQuantity(@Param('id') id: string) {
-    return this.cartService.deleteCartItem(id);
+  deleteQuantity(@CurrentUser() user: IAuthUser, @Param('id') id: string) {
+    return this.cartService.deleteCartItem(user, id);
   }
 
   @Get('my')

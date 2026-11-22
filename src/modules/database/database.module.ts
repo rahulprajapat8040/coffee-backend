@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { models } from './models/index.js';
+import { DatabaseSyncService } from './database-sync.service.js';
 
 @Global()
 @Module({
@@ -9,8 +10,7 @@ import { models } from './models/index.js';
       dialect: 'postgres',
       uri: process.env.DATABASE_URL,
       autoLoadModels: true,
-      synchronize: true,
-      sync: { alter: true },
+      synchronize: false,
       logging: false,
       define: {
         underscored: true,
@@ -20,6 +20,7 @@ import { models } from './models/index.js';
     }),
     SequelizeModule.forFeature(models),
   ],
+  providers: [DatabaseSyncService],
   exports: [SequelizeModule],
 })
 export class DatabaseModule {}

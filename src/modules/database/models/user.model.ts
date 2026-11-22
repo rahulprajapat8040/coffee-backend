@@ -13,6 +13,8 @@ import { DeviceInfo } from './device-info.model.js';
 import { Cart } from './cart.model.js';
 import { Role } from '../../../lib/utils/enums/enum.js';
 import { Address } from './address.model.js';
+import { Wishlist } from './wishlist.model.js';
+import { Order } from './order.model.js';
 
 @Table({ tableName: MODEL_NAME.USER, paranoid: true, timestamps: true })
 export class User extends Model<User, Partial<User>> {
@@ -39,6 +41,7 @@ export class User extends Model<User, Partial<User>> {
   @Column({ type: DataType.INTEGER })
   declare userIdx: number;
 
+  @Default(Role.USER)
   @Column({ type: DataType.ENUM(...Object.values(Role)) })
   declare role: Role;
 
@@ -50,6 +53,12 @@ export class User extends Model<User, Partial<User>> {
 
   @HasMany(() => Address)
   declare addresses: Address[];
+
+  @HasMany(() => Wishlist)
+  declare wishlist: Wishlist[];
+
+  @HasMany(() => Order)
+  declare orders: Order[];
 
   @BeforeCreate
   static async setindex(instance: User) {

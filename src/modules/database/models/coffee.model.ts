@@ -4,6 +4,7 @@ import { Category } from "./category.model.js";
 import type { NonAttribute } from 'sequelize';
 import { Variant } from "./variant.model.js";
 import { Cart } from "./cart.model.js";
+import { Wishlist } from "./wishlist.model.js";
 
 @Table({ tableName: MODEL_NAME.COFFEE, timestamps: true, paranoid: true })
 export class Coffee extends Model<Coffee, Partial<Coffee>> {
@@ -41,4 +42,7 @@ export class Coffee extends Model<Coffee, Partial<Coffee>> {
 
   @HasMany(() => Cart)
   declare cart: Cart[];
+
+  @HasMany(() => Wishlist)
+  declare wishlist: Wishlist[];
 }
