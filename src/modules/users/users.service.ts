@@ -13,6 +13,8 @@ import { IAuthUser } from '../../lib/interfaces/auth.interface.js';
 import { AddressDTO, UpdateProfileDTO } from './dto/user.dto.js';
 import { CommonQueryDTO } from '../../lib/utils/dto/common-query.dto.js';
 import { Sequelize } from 'sequelize-typescript';
+import { Op } from 'sequelize';
+import { Offer } from '../database/models/offer.model.js';
 
 @Injectable()
 export class UsersService {
@@ -20,16 +22,27 @@ export class UsersService {
     @InjectModel(User) private readonly userModel: typeof User,
     @InjectModel(Category) private readonly categoryModel: typeof Category,
     @InjectModel(Address) private readonly addressModel: typeof Address,
+    @InjectModel(Offer) private readonly offerModel: typeof Offer,
     private readonly sequelize: Sequelize,
   ) {}
 
   async getHomeData() {
-    const [categories] = await Promise.all([
+    const now = new Date();
+    const [categories, offers] = await Promise.all([
       this.categoryModel.findAll({ attributes: ['id', 'name'] }),
+      this.offerModel.findAll({
+        where: {
+          isActive: true,
+          startDate: { [Op.lte]: now },
+          [Op.or]: [{ endDate: null }, { endDate: { [Op.gte]: now } }],
+        },
+        order: [['startDate', 'ASC']],
+      }),
     ]);
 
     return responseSender(RESPONSE_MESSAGE.DATA_FETCHED, HttpStatus.OK, true, {
       categories,
+      offers,
     });
   }
 

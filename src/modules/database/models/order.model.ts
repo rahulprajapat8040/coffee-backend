@@ -14,6 +14,7 @@ import { MODEL_NAME } from '../../../lib/utils/constant/model-names.constant.js'
 import { OrderStatus, PaymentMethod } from '../../../lib/utils/enums/enum.js';
 import { OrderItem } from './order-item.model.js';
 import { User } from './user.model.js';
+import { OrderStatusHistory } from './order-status.model.js';
 
 @Table({ tableName: MODEL_NAME.ORDER, paranoid: true, timestamps: true })
 export class Order extends Model<Order, Partial<Order>> {
@@ -30,10 +31,23 @@ export class Order extends Model<Order, Partial<Order>> {
   declare deliveryAddress: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
+  declare deliveryAddressLabel: string | null;
+
+  @Column({ type: DataType.FLOAT, allowNull: true })
+  declare deliveryLatitude: number | null;
+
+  @Column({ type: DataType.FLOAT, allowNull: true })
+  declare deliveryLongitude: number | null;
+
+  @Column({ type: DataType.STRING, allowNull: true })
   declare note: string | null;
 
   @Column(DataType.DECIMAL(10, 2))
   declare subtotal: string;
+
+  @Default('0.00')
+  @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
+  declare discountTotal: string;
 
   @Column(DataType.DECIMAL(10, 2))
   declare deliveryFee: string;
@@ -57,4 +71,7 @@ export class Order extends Model<Order, Partial<Order>> {
 
   @HasMany(() => OrderItem)
   declare items: NonAttribute<OrderItem[]>;
+
+  @HasMany(() => OrderStatusHistory)
+  declare statusHistory: NonAttribute<OrderStatusHistory[]>;
 }

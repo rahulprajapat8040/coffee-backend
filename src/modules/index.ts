@@ -7,6 +7,8 @@ import { RedisModule } from './redis/redis.module.js';
 import { UsersModule } from './users/user.module.js';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OrderModule } from './order/order.module.js';
+import { OffersModule } from './offers/offers.module.js';
+import { DashboardModule } from './dashboard/dashboard.module.js';
 
 export const Modules = [
   ServeStaticModule.forRoot({
@@ -20,4 +22,6 @@ export const Modules = [
   UsersModule,
   FileModule,
   OrderModule,
+  OffersModule,
+  DashboardModule,
 ];

@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../database/models/user.model.js';
@@ -17,7 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { DeviceType } from '../../lib/utils/enums/enum.js';
 import { Transaction } from 'sequelize';
-import { IAuthUser } from '../../lib/interfaces/auth.interface.js';
+import { IAuthUser, IJwtPayload } from '../../lib/interfaces/auth.interface.js';
 
 @Injectable()
 export class AuthService {
@@ -146,6 +147,36 @@ export class AuthService {
   private async getUserByEmail(email: string) {
     const res = await this.userModel.findOne({ where: { email } });
     return res;
+  }
+
+  async refreshTokens(user: IJwtPayload & { refreshToken: string }) {
+    const tokens = await this.sequelize.transaction(async (transaction) => {
+      const device = await this.deviceModel.findOne({
+        where: { deviceId: user.deviceId, userId: user.userId },
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!device || !(await argon.verify(device.refreshHash, user.refreshToken))) {
+        throw new UnauthorizedException('Refresh token is invalid or expired');
+      }
+
+      const refreshed = await this.generateAuthTokens(
+        user.deviceId,
+        user.userId,
+      );
+      await device.update(
+        { refreshHash: await argon.hash(refreshed.refreshToken) },
+        { transaction },
+      );
+      return refreshed;
+    });
+
+    return responseSender(
+      RESPONSE_MESSAGE.DATA_FETCHED,
+      HttpStatus.OK,
+      true,
+      tokens,
+    );
   }
 
   private async generateAuthTokens(deviceId: string, userId: string) {

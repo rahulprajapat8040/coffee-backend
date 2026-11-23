@@ -9,4 +9,6 @@ export const MODEL_NAME = {
   WISH_LIST: 'WishList',
   ORDER: 'Order',
   ORDER_ITEM: 'OrderItem',
+  ORDER_STATUS: 'OrderStatus',
+  OFFER: 'Offer',
 };

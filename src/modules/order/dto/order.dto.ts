@@ -8,6 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { OrderStatus } from '../../../lib/utils/enums/enum.js';
+import { CommonQueryDTO } from '../../../lib/utils/dto/common-query.dto.js';
 
 export class CreateOrderDTO {
   @ApiProperty({ description: 'Saved delivery address id' })
@@ -27,4 +28,11 @@ export class UpdateOrderStatusDTO {
   @IsNotEmpty()
   @IsEnum(OrderStatus)
   status: OrderStatus;
+}
+
+export class OrderQueryDTO extends CommonQueryDTO {
+  @ApiPropertyOptional({ enum: OrderStatus })
+  @IsOptional()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
 }

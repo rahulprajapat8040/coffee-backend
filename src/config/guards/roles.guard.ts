@@ -25,7 +25,7 @@ export class RolesGuard implements CanActivate {
     const user = context.switchToHttp().getRequest<{ user?: IAuthUser }>().user;
     if (!user || !roles.includes(user.role)) {
       throw new ForbiddenException(
-        'You do not have permission to update orders',
+        'You do not have permission to perform this action',
       );
     }
     return true;

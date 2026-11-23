@@ -8,6 +8,8 @@ import { Variant } from './variant.model.js';
 import { Wishlist } from './wishlist.model.js';
 import { Order } from './order.model.js';
 import { OrderItem } from './order-item.model.js';
+import { OrderStatusHistory } from './order-status.model.js';
+import { Offer } from './offer.model.js';
 
 export const models = [
   DeviceInfo,
@@ -20,6 +22,8 @@ export const models = [
   Wishlist,
   Order,
   OrderItem,
+  OrderStatusHistory,
+  Offer,
 ];
 
 export {
@@ -33,4 +37,6 @@ export {
   Wishlist,
   Order,
   OrderItem,
+  OrderStatusHistory,
+  Offer,
 };

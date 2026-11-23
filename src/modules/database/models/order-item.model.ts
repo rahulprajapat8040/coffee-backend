@@ -41,6 +41,17 @@ export class OrderItem extends Model<OrderItem, Partial<OrderItem>> {
   @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
   declare price: string;
 
+  @Default('0.00')
+  @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
+  declare originalPrice: string;
+
+  @Default('0.00')
+  @Column({ type: DataType.DECIMAL(10, 2), allowNull: false })
+  declare discountAmount: string;
+
+  @Column({ type: DataType.STRING, allowNull: true })
+  declare offerTitle: string | null;
+
   @Column({ type: DataType.INTEGER, allowNull: false })
   declare quantity: number;
 

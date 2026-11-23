@@ -24,3 +24,9 @@ export enum OrderStatus {
 export enum PaymentMethod {
   CASH_ON_DELIVERY = 'CASH_ON_DELIVERY',
 }
+
+export enum OfferTargetType {
+  ALL_PRODUCTS = 'ALL_PRODUCTS',
+  SELECTED_COFFEES = 'SELECTED_COFFEES',
+  SELECTED_CATEGORIES = 'SELECTED_CATEGORIES',
+}

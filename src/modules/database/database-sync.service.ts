@@ -1,14 +1,50 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { Order } from './models/order.model.js';
+import { OrderStatusHistory } from './models/order-status.model.js';
 import { Sequelize } from 'sequelize-typescript';
 
 @Injectable()
 export class DatabaseSyncService implements OnApplicationBootstrap {
-  constructor(private readonly sequelize: Sequelize) {}
+  constructor(
+    private readonly sequelize: Sequelize,
+    @InjectModel(Order) private readonly orderModel: typeof Order,
+    @InjectModel(OrderStatusHistory)
+    private readonly orderStatusModel: typeof OrderStatusHistory,
+  ) {}
 
   async onApplicationBootstrap() {
     await this.sequelize.sync();
     await this.migrateLegacyOrderItems();
     await this.sequelize.sync({ alter: true });
+    await this.backfillOrderStatuses();
+  }
+
+  private async backfillOrderStatuses() {
+    const [orders, histories] = await Promise.all([
+      this.orderModel.findAll({
+        attributes: ['id', 'status', 'createdAt'],
+      }),
+      this.orderStatusModel.findAll({
+        attributes: ['orderId'],
+        raw: true,
+      }),
+    ]);
+    const trackedOrderIds = new Set(
+      histories.map((history) => history.orderId),
+    );
+    const missingHistories = orders
+      .filter((order) => !trackedOrderIds.has(order.id))
+      .map((order) => ({
+        orderId: order.id,
+        status: order.status,
+        changedBy: null,
+        createdAt: order.createdAt,
+      }));
+
+    if (missingHistories.length) {
+      await this.orderStatusModel.bulkCreate(missingHistories);
+    }
   }
 
   private async migrateLegacyOrderItems() {

@@ -120,7 +120,7 @@ export class ProductService {
   async getCoffeeDetail(id: string) {
     const res = await this.coffeeModel.findOne({
       where: { id, isActive: true },
-      attributes: ['id', 'image', 'name', 'description'],
+      attributes: ['id', 'image', 'name', 'description', 'categoryId'],
       include: [
         {
           model: this.variantModel,
