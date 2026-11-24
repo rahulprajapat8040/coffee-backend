@@ -35,7 +35,7 @@ export class DeviceInfo extends Model<DeviceInfo, Partial<DeviceInfo>> {
   declare deviceId: string;
 
   @Column({ allowNull: true, type: DataType.TEXT })
-  declare deviceToken: string;
+  declare deviceToken: string | null;
 
   @Column({ type: DataType.STRING, allowNull: true })
   declare otp: string;

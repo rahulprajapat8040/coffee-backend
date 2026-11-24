@@ -9,12 +9,14 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { OrderModule } from './order/order.module.js';
 import { OffersModule } from './offers/offers.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
+import { QueueModule } from './queue/queue.module.js';
 
 export const Modules = [
   ServeStaticModule.forRoot({
     rootPath: join(import.meta.dirname, '..', '..', 'uploads'),
     serveRoot: '/uploads',
   }),
+  QueueModule,
   DatabaseModule,
   RedisModule,
   AuthModule,

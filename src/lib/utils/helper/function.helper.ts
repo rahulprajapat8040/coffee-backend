@@ -31,7 +31,7 @@ export const generatePagination = <T>(
   };
 };
 
-export function getPagination(query: CommonQueryDTO) {
+export const getPagination = (query: CommonQueryDTO) => {
   const page = query.page ?? 1;
   const limit = query.limit ?? 10;
   const offset = (page - 1) * limit;
@@ -41,4 +41,13 @@ export function getPagination(query: CommonQueryDTO) {
     limit,
     offset,
   };
-}
+};
+
+export const formatMessage = (
+  template: string,
+  variables: Record<string, string | number>,
+): string => {
+  return template.replace(/\{(\w+)\}/g, (match, key) => {
+    return variables[key]?.toString() ?? match;
+  });
+};
