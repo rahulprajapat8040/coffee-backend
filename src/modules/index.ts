@@ -10,6 +10,7 @@ import { OrderModule } from './order/order.module.js';
 import { OffersModule } from './offers/offers.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
 import { QueueModule } from './queue/queue.module.js';
+import { NotificationModule } from './notifications/notification.module.js';
 
 export const Modules = [
   ServeStaticModule.forRoot({
@@ -26,4 +27,5 @@ export const Modules = [
   OrderModule,
   OffersModule,
   DashboardModule,
+  NotificationModule,
 ];

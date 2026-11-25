@@ -10,6 +10,7 @@ import { Order } from './order.model.js';
 import { OrderItem } from './order-item.model.js';
 import { OrderStatusHistory } from './order-status.model.js';
 import { Offer } from './offer.model.js';
+import { Notification } from './notification.model.js';
 
 export const models = [
   DeviceInfo,
@@ -24,6 +25,7 @@ export const models = [
   OrderItem,
   OrderStatusHistory,
   Offer,
+  Notification
 ];
 
 export {
@@ -39,4 +41,5 @@ export {
   OrderItem,
   OrderStatusHistory,
   Offer,
+  Notification,
 };

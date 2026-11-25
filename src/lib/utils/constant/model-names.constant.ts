@@ -11,4 +11,5 @@ export const MODEL_NAME = {
   ORDER_ITEM: 'OrderItem',
   ORDER_STATUS: 'OrderStatus',
   OFFER: 'Offer',
+  NOTIFICATION: 'Notification',
 };

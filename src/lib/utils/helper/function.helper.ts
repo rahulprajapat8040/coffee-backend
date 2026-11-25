@@ -43,11 +43,17 @@ export const getPagination = (query: CommonQueryDTO) => {
   };
 };
 
-export const formatMessage = (
+export function formatMessage(
   template: string,
-  variables: Record<string, string | number>,
-): string => {
+  variables: Record<string, unknown>,
+): string {
   return template.replace(/\{(\w+)\}/g, (match, key) => {
-    return variables[key]?.toString() ?? match;
+    const value = variables[key];
+
+    if (value === undefined || value === null) {
+      return match;
+    }
+
+    return String(value);
   });
-};
+}

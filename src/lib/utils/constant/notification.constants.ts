@@ -5,5 +5,7 @@ export const NotificationJob = {
 } as const;
 
 export const NOTIFICATION_JOB_NAMES = {
-  ORDER_PLACED: 'order-placed',
+  SEND_TO_USER: 'send-notification-to-user',
+  SEND_TO_ALL: 'send-notification-to-all',
+  SEND_TO_ADMIN: 'send-notification-to-admin',
 };
